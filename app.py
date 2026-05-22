@@ -60,7 +60,11 @@ st.sidebar.header("📁 Data Source")
 upload_option = st.sidebar.radio("Select Dataset:", ["Use Built-in Weather Data", "Upload Custom CSV"])
 
 if upload_option == "Upload Custom CSV":
-    uploaded_file = st.sidebar.file_uploader("Upload your CSV file (must contain 'Date' and 'Temperature' columns)", type=["csv"])
+    uploaded_file = st.sidebar.file_uploader(
+        "Upload your CSV file (must contain 'Date' and 'Temperature' columns)",
+        type=["csv"]
+    )
+
     if uploaded_file is not None:
         try:
             df_uploaded = pd.read_csv(uploaded_file)
@@ -73,10 +77,10 @@ if upload_option == "Upload Custom CSV":
                 errors='coerce'
             )
 
-        # Remove invalid dates
-        df_uploaded = df_uploaded.dropna(subset=['Date'])
+            # Remove invalid dates
+            df_uploaded = df_uploaded.dropna(subset=['Date'])
 
-        if df_uploaded.empty:
+            if df_uploaded.empty:
                 st.sidebar.error("No valid dates found in uploaded CSV.")
                 st.stop()
 
@@ -94,19 +98,19 @@ if upload_option == "Upload Custom CSV":
                 st.sidebar.error("No valid temperature values found in uploaded CSV.")
                 st.stop()
 
-        # Ensure proper columns
-        required_cols = {'Date', 'Temperature'}
+            # Ensure proper columns
+            required_cols = {'Date', 'Temperature'}
 
-        if required_cols.issubset(df_uploaded.columns):
-            st.session_state['weather_df'] = df_uploaded
-            st.sidebar.success("Custom data loaded successfully!")
-        else:
-            st.sidebar.error(
-                "Error: CSV must contain 'Date' and 'Temperature' columns."
-            )
+            if required_cols.issubset(df_uploaded.columns):
+                st.session_state['weather_df'] = df_uploaded
+                st.sidebar.success("Custom data loaded successfully!")
+            else:
+                st.sidebar.error(
+                    "CSV must contain 'Date' and 'Temperature' columns."
+                )
 
-    except Exception as e:
-        st.sidebar.error(f"Error parsing file: {e}")
+        except Exception as e:
+            st.sidebar.error(f"Error parsing file: {e}")
 
 df = st.session_state['weather_df'].copy()
 
