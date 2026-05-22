@@ -76,6 +76,24 @@ if upload_option == "Upload Custom CSV":
         # Remove invalid dates
         df_uploaded = df_uploaded.dropna(subset=['Date'])
 
+        if df_uploaded.empty:
+                st.sidebar.error("No valid dates found in uploaded CSV.")
+                st.stop()
+
+            # Convert temperature safely
+            df_uploaded['Temperature'] = pd.to_numeric(
+                df_uploaded['Temperature'],
+                errors='coerce'
+            )
+
+            # Remove invalid temperature rows
+            df_uploaded = df_uploaded.dropna(subset=['Temperature'])
+
+            # Stop if all temperatures are invalid
+            if df_uploaded.empty:
+                st.sidebar.error("No valid temperature values found in uploaded CSV.")
+                st.stop()
+
         # Ensure proper columns
         required_cols = {'Date', 'Temperature'}
 
