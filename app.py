@@ -62,18 +62,33 @@ upload_option = st.sidebar.radio("Select Dataset:", ["Use Built-in Weather Data"
 if upload_option == "Upload Custom CSV":
     uploaded_file = st.sidebar.file_uploader("Upload your CSV file (must contain 'Date' and 'Temperature' columns)", type=["csv"])
     if uploaded_file is not None:
-        try:
-            df_uploaded = pd.read_csv(uploaded_file)
-            df_uploaded['Date'] = pd.to_datetime(df_uploaded['Date'])
-            # Ensure proper columns
-            required_cols = {'Date', 'Temperature'}
-            if required_cols.issubset(df_uploaded.columns):
-                st.session_state['weather_df'] = df_uploaded
-                st.sidebar.success("Custom data loaded successfully!")
-            else:
-                st.sidebar.error("Error: CSV must contain 'Date' and 'Temperature' columns.")
-        except Exception as e:
-            st.sidebar.error(f"Error parsing file: {e}")
+    try:
+        df_uploaded = pd.read_csv(uploaded_file)
+
+        # Flexible date parsing
+        df_uploaded['Date'] = pd.to_datetime(
+            df_uploaded['Date'],
+            format='mixed',
+            dayfirst=False,
+            errors='coerce'
+        )
+
+        # Remove invalid dates
+        df_uploaded = df_uploaded.dropna(subset=['Date'])
+
+        # Ensure proper columns
+        required_cols = {'Date', 'Temperature'}
+
+        if required_cols.issubset(df_uploaded.columns):
+            st.session_state['weather_df'] = df_uploaded
+            st.sidebar.success("Custom data loaded successfully!")
+        else:
+            st.sidebar.error(
+                "Error: CSV must contain 'Date' and 'Temperature' columns."
+            )
+
+    except Exception as e:
+        st.sidebar.error(f"Error parsing file: {e}")
 
 df = st.session_state['weather_df'].copy()
 
