@@ -9,7 +9,7 @@ This application allows users to analyze historical weather trends, train regres
 # 🚀 Live Demo
 
 🌐 Project Link:  
-http://10.248.224.235:8501
+https://smartforecast-ai.streamlit.app
 
 ---
 
